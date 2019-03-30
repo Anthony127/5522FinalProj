@@ -63,6 +63,18 @@ for score in scores:
 
 print(maxInfo)
 
+maxSP = Perceptron(alpha = maxInfo[0][0],penalty = 'l2', max_iter= maxInfo[0][1], class_weight='balanced')
+maxSP.fit(X,y)
+yP = maxSP.predict(X)
+
+conMat = confusion_matrix(y,yP)
+df_cm = pd.DataFrame(conMat, ['Not Pulsar', 'Pulsar'],['Not Pulsar', 'Pulsar'])
+
+sn.set(font_scale=1)#for label size
+ax = sn.heatmap(df_cm, annot=True,fmt= 'd',annot_kws={"size": 16})# font size
+ax.set(xlabel = 'Predicted Value', ylabel = 'True Label')
+plt.show()
+
 bestSP = Perceptron(alpha = maxInfo[0][0],penalty = 'l2', max_iter= maxInfo[0][1], class_weight='balanced')
 
 #Apply Adaptive Boosting(AdaBoost)
@@ -72,17 +84,28 @@ adaSP.fit(X,y)
 yP = adaSP.predict(X)
 
 conMat = confusion_matrix(y,yP)
-df_cm = pd.DataFrame(conMat, range(2),
-                  range(2))
+df_cm = pd.DataFrame(conMat, ['Not Pulsar', 'Pulsar'],['Not Pulsar', 'Pulsar'])
 
-sn.set(font_scale=1.4)#for label size
-sn.heatmap(df_cm, annot=True,annot_kws={"size": 16})# font size
+sn.set(font_scale=1)#for label size
+ax = sn.heatmap(df_cm, annot=True,fmt= 'd',annot_kws={"size": 16})# font size
+ax.set(xlabel = 'Predicted Value', ylabel = 'True Label')
+plt.show()
 
 print('Adaboost Accuracy:',adaSP.score(X,y))
 
 baggedSP = BaggingClassifier(base_estimator= bestSP, n_estimators= 15, max_samples= 500, max_features= 8, bootstrap= True)
 baggedSP.fit(X,y)
 print('Bagged Accuracy:',baggedSP.score(X,y))
+
+yP = baggedSP.predict(X)
+
+conMat = confusion_matrix(y,yP)
+df_cm = pd.DataFrame(conMat, ['Not Pulsar', 'Pulsar'],['Not Pulsar', 'Pulsar'])
+
+sn.set(font_scale=1)#for label size
+ax = sn.heatmap(df_cm, annot=True,fmt= 'd',annot_kws={"size": 16})# font size
+ax.set(xlabel = 'Predicted Value', ylabel = 'True Label')
+plt.show()
 
 #sequencedSp = BaggingClassifier(base_estimator= adaSP, n_estimators= 15, max_samples= 500, max_features= 8, bootstrap= True)
 #sequencedSp.fit(X,y)
